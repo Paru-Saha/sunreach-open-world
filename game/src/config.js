@@ -1,61 +1,104 @@
-// Every tuning number and colour in one place. The playfield is a fixed 1280x720 logical area;
-// the renderer scales it to the window, so no rule below depends on the screen size.
+// Tunable numbers for Sunreach Bay: the city grid, movement, vehicles, police and economy.
+// Every system reads from here so the feel of the game can be tuned in one place.
 
-export const FIELD = { width: 1280, height: 720, groundY: 664 };
-
-/** The simulation's fixed step, in seconds: 60 updates a second whatever the display's rate. */
 export const STEP = 1 / 60;
 
+/** City layout: an 8 x 6 grid of blocks between roads, the beach and ocean to the south. */
+export const CITY = {
+  cell: 80,          // road centre to road centre
+  road: 14,          // asphalt width
+  sidewalk: 4,       // pavement inside each block edge
+  blocksX: 8,
+  blocksZ: 6,
+  beachDepth: 60,    // sand between the shore road and the water line
+  bound: 470,        // invisible wall around the playable area
+};
+CITY.halfX = (CITY.blocksX * CITY.cell) / 2;
+CITY.halfZ = (CITY.blocksZ * CITY.cell) / 2;
+CITY.waterZ = CITY.halfZ + CITY.road / 2 + CITY.beachDepth;
+CITY.harborX = -CITY.halfX - CITY.road / 2 - 46;
+
 export const PLAYER = {
-  width: 72,
-  height: 24,
-  speed: 560,
-  invulnerable: 1.5,
+  walk: 4.2,
+  sprint: 8.6,
+  radius: 0.45,
+  height: 1.8,
+  maxHealth: 100,
+  maxArmor: 100,
+  jump: 6.2,
+  gravity: 20,
+  enterRange: 4.2,
 };
 
-export const LIVES = 3;
-
-export const BLOCK = {
-  minWidth: 40,
-  maxWidth: 110,
-  height: 36,
-  speed: 240,
-  speedPerLevel: 30,
-  speedJitter: 90,
-  interval: 0.55,
-  intervalScale: 0.88,
-  minInterval: 0.14,
-  dodgePoints: 1,
+export const VEHICLE = {
+  radius: 1.2,
+  length: 4.6,
+  accel: 15,
+  reverseAccel: 8,
+  brake: 32,
+  drag: 0.22,
+  rolling: 1.2,
+  grip: 9,
+  driftGrip: 1.6,
+  turnRate: 2.5,
+  maxHealth: 100,
 };
 
-export const COIN = {
-  size: 24,
-  speed: 190,
-  speedPerLevel: 14,
-  interval: 1.4,
-  intervalJitter: 0.8,
-  points: 10,
+export const CAMERA = {
+  footDistance: 5.2,
+  aimDistance: 2.6,
+  carDistance: 9.5,
+  carHeight: 3.4,
+  fov: 62,
+  fovBoost: 14,
+  mouseSpeed: 0.0024,
 };
 
-/** Seconds of play per level, and the last level: speeds and spawn rates stop growing there. */
-export const LEVEL = { seconds: 12, max: 12 };
+export const TRAFFIC = { cars: 26, cruise: 11, peds: 46 };
 
-/** How many falling things can exist at once; the pool is allocated once, at boot. */
-export const POOL_SIZE = 64;
+export const POLICE = {
+  maxStars: 5,
+  carsPerStar: [0, 1, 2, 3, 4, 6],
+  spawnMin: 110,
+  spawnMax: 170,
+  sightRange: 70,
+  coolBase: 9,
+  coolPerStar: 4,
+  bustTime: 2.2,
+};
 
+export const ECONOMY = {
+  startMoney: 250,
+  deathFee: 200,
+  arrestFee: 350,
+  ammoPrice: 120,
+  ammoPack: 30,
+  armorPrice: 400,
+  healPrice: 80,
+  smgPrice: 1500,
+  tokenReward: 250,
+};
+
+export const WEAPONS = {
+  fists: { name: 'Fists', damage: 18, range: 1.9, cooldown: 0.42, auto: false, spread: 0 },
+  pistol: { name: 'Vela 9 Pistol', damage: 34, range: 90, cooldown: 0.26, auto: false, spread: 0.012 },
+  smg: { name: 'Gull SMG', damage: 20, range: 70, cooldown: 0.085, auto: true, spread: 0.035 },
+};
+export const WEAPON_ORDER = ['fists', 'pistol', 'smg'];
+
+/** Golden-hour palette shared by the sky, fog and lights. */
 export const PALETTE = {
-  backdrop: '#11141b',
-  sky: '#1b1f2a',
-  ground: '#2a3040',
-  player: '#4fc3f7',
-  block: '#e5534b',
-  coin: '#f2c94c',
-  panel: '#252b38',
-  text: '#eef1f5',
-  muted: '#8b93a3',
+  skyTop: 0x3f7fd6,
+  skyHorizon: 0xffc89a,
+  fog: 0xf3c9a4,
+  sun: 0xffe2b8,
+  ground: 0xd9c49a,
+  sand: 0xf0d9a6,
+  asphalt: 0x3b3d44,
+  sidewalk: 0xc9bfae,
+  sea: 0x1f8fb0,
+  pastel: [0xf7b7a3, 0xfde2b4, 0xa8e0d5, 0xf6d0e6, 0xb9d7f2, 0xfff2cf, 0xffd1a6, 0xd2f0c2],
+  glass: [0x7fb6d9, 0x9ccbe3, 0x6aa3c7, 0xa9d4de],
+  warehouse: [0xb8a48c, 0x8fa3ad, 0xa47f6a, 0x9a9a8a],
+  car: [0xe84a5f, 0x2a9d8f, 0xf4a261, 0xffffff, 0x264653, 0xe9c46a, 0x8ecae6, 0x9b5de5, 0x222222, 0xf15bb5],
 };
-
-export const FONT = 'system-ui, -apple-system, "Segoe UI", sans-serif';
-
-/** Where the best score is kept between visits (this browser only). */
-export const BEST_KEY = 'block-dodger.best';
